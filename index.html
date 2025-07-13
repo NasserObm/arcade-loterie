@@ -88,20 +88,21 @@
   const rewardDiv = document.getElementById('reward');
 
  
+
  function tirerRecompense() {
     const rand = Math.random() * 100;
 
-    if (rand < 65) {
+    if (rand <70 ) {
         return "😕 Pas de chance cette fois !";
     } else if (rand < 75) {
         return "🕒 15 minutes de jeu supplémentaires";
     } else if (rand < 80) {
         return "🕒 30 minutes de jeu supplémentaires";
-    } else if (rand < 83) {
-        return "🕓 45 minutes de jeu supplémentaires";
     } else if (rand < 85) {
+        return "🕓 45 minutes de jeu supplémentaires";
+    } else if (rand < 90) {
         return "⏱️ 1 heure de jeu supplémentaire";
-    } else if (rand < 88) {
+    } else if (rand < 95) {
         return "🥤 Boisson offerte";
     } else {
         return "💎 JACKPOT : 1 jour gratuit avec un ami !";

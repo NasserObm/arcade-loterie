@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Boîte Mystère - Thème Vert & Gris</title>
+<title>Boîte Mystère - Récompense directe</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #2e3a40; /* gris foncé neutre */
-    color: #d7e8d2; /* vert très doux */
+    background: #2e3a40;
+    color: #d7e8d2;
     text-align: center;
     padding: 40px 20px;
   }
 
   h1 {
-    color: #81b29a; /* vert doux */
+    color: #81b29a;
     font-weight: 900;
     font-size: 3rem;
     margin-bottom: 10px;
@@ -50,15 +50,9 @@
   #coffre {
     width: 160px;
     margin: 40px auto;
-    cursor: pointer;
     filter: drop-shadow(0 0 8px #81b29a);
-    transition: transform 0.3s ease, filter 0.3s ease;
     user-select: none;
-  }
-
-  #coffre:hover {
-    transform: scale(1.15) rotate(3deg);
-    filter: drop-shadow(0 0 15px #67907d);
+    display: none;
   }
 
   .reward {
@@ -78,51 +72,53 @@
 </style>
 </head>
 <body>
-  <h1>🎮 Boîte Mystère</h1>
-  <p>Appuie sur le bouton pour faire apparaître le coffre !</p>
 
-  <button id="showCoffre">Afficher le Coffre</button>
+<h1>🎮 Boîte Mystère</h1>
+<p>Appuie sur le bouton pour tenter ta chance !</p>
 
-  <img id="coffre" src="coffre.png" alt="Coffre au trésor" draggable="false" style="display:none;" />
+<button id="showCoffre">Tirer une Récompense</button>
 
-  <div id="reward" class="reward"></div>
+<img id="coffre" src="coffre.png" alt="Coffre au trésor" draggable="false" />
 
-  <script>
-    const showCoffreBtn = document.getElementById('showCoffre');
-    const coffre = document.getElementById('coffre');
-    const rewardDiv = document.getElementById('reward');
-            const rewards = [
-            "🎮 30 minutes de jeu supplémentaires",
-            "🎮 30 minutes de jeu supplémentaires",
-            "🎮 30 minutes de jeu supplémentaires",
-            "🥤  Boisson offerte",
-            "🥤  Boisson offerte",
-            "🎟️ Acces au tournoi",
-            "😕 Pas de chance cette fois !",
-            "😕 Pas de chance cette fois !",
-            "😕 Pas de chance cette fois !",
-            "😕 Pas de chance cette fois !",
-            "😕 Pas de chance cette fois !",
-        ];
-    showCoffreBtn.addEventListener('click', () => {
-      showCoffreBtn.style.display = 'none';
-      coffre.style.display = 'block';
+<div id="reward" class="reward"></div>
 
-      // Reset la récompense à chaque clic bouton
-      rewardDiv.textContent = '';
-      rewardDiv.classList.remove('show');
-    });
+<script>
+  const showCoffreBtn = document.getElementById('showCoffre');
+  const coffre = document.getElementById('coffre');
+  const rewardDiv = document.getElementById('reward');
+
+ 
+ function tirerRecompense() {
+    const rand = Math.random() * 100;
+
+    if (rand < 65) {
+        return "😕 Pas de chance cette fois !";
+    } else if (rand < 75) {
+        return "🕒 15 minutes de jeu supplémentaires";
+    } else if (rand < 80) {
+        return "🕒 30 minutes de jeu supplémentaires";
+    } else if (rand < 83) {
+        return "🕓 45 minutes de jeu supplémentaires";
+    } else if (rand < 85) {
+        return "⏱️ 1 heure de jeu supplémentaire";
+    } else if (rand < 88) {
+        return "🥤 Boisson offerte";
+    } else {
+        return "💎 JACKPOT : 1 jour gratuit avec un ami !";
+    }
+}
+
+
 
   showCoffreBtn.addEventListener('click', () => {
-    showCoffreBtn.style.display = 'none';
-    coffre.classList.add('show');
+      const reward = tirerRecompense();
+      rewardDiv.textContent = reward;
+      rewardDiv.classList.add('show');
 
-    // Affiche la récompense directement après affichage du coffre
-    const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-    rewardDiv.textContent = randomReward;
-    rewardDiv.classList.add('show');
-});
+      showCoffreBtn.style.display = 'none';
+      coffre.style.display = 'block';
+  });
+</script>
 
-  </script>
 </body>
 </html>

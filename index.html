@@ -87,37 +87,30 @@
   const coffre = document.getElementById('coffre');
   const rewardDiv = document.getElementById('reward');
 
- 
-
- function tirerRecompense() {
-    const rand = Math.random() * 100;
-
-    if (rand <70 ) {
-        return "😕 Pas de chance cette fois !";
-    } else if (rand < 75) {
-        return "🕒 15 minutes de jeu supplémentaires";
-    } else if (rand < 80) {
-        return "🕒 30 minutes de jeu supplémentaires";
-    } else if (rand < 85) {
-        return "🕓 45 minutes de jeu supplémentaires";
-    } else if (rand < 90) {
-        return "⏱️ 1 heure de jeu supplémentaire";
-    } else if (rand < 95) {
-        return "🥤 Boisson offerte";
-    } else {
-        return "💎 JACKPOT : 1 jour gratuit avec un ami !";
-    }
-}
+ // Récompenses pondérées par répétition
+const rewards = [
+  ...Array(60).fill("😕 Pas de chance cette fois !"),
+  ...Array(10).fill("🎮 30 minutes de jeu supplémentaires"),
+  ...Array(12).fill("🕒 15 minutes de jeu supplémentaires"),
+  ...Array(4).fill("🕓 45 minutes de jeu supplémentaires"),
+  ...Array(3).fill("⏱️ 1 heure de jeu supplémentaire"),
+  ...Array(5).fill("🥤 Boisson offerte"),
+  ...Array(1).fill("💎 JACKPOT : 1 jour gratuit avec un ami !")
+];
 
 
+  function tirerRecompense() {
+    const index = Math.floor(Math.random() * rewards.length);
+    return rewards[index];
+  }
 
   showCoffreBtn.addEventListener('click', () => {
-      const reward = tirerRecompense();
-      rewardDiv.textContent = reward;
-      rewardDiv.classList.add('show');
+    const reward = tirerRecompense();
+    rewardDiv.textContent = reward;
+    rewardDiv.classList.add('show');
 
-      showCoffreBtn.style.display = 'none';
-      coffre.style.display = 'block';
+    showCoffreBtn.style.display = 'none';
+    coffre.style.display = 'block';
   });
 </script>
 

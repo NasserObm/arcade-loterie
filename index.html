@@ -1,124 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Boîte Mystère - Thème Vert & Gris</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boîte Mystère - Animation Récompense</title>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #2e3a40; /* gris foncé neutre */
-    color: #d7e8d2; /* vert très doux */
-    text-align: center;
-    padding: 40px 20px;
-  }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #2e3a40;
+        color: #d7e8d2;
+        text-align: center;
+        padding: 40px 20px;
+    }
 
-  h1 {
-    color: #81b29a; /* vert doux */
-    font-weight: 900;
-    font-size: 3rem;
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px #6b998e;
-  }
+    h1 {
+        color: #81b29a;
+        font-weight: 900;
+        font-size: 3rem;
+        margin-bottom: 10px;
+        text-shadow: 0 0 8px #6b998e;
+    }
 
-  p {
-    color: #c2d4cd;
-    font-size: 1.25rem;
-    margin-bottom: 30px;
-  }
+    p {
+        color: #c2d4cd;
+        font-size: 1.25rem;
+        margin-bottom: 30px;
+    }
 
-  button {
-    background: #81b29a;
-    border: none;
-    padding: 14px 36px;
-    border-radius: 10px;
-    color: #1a2f23;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(129, 178, 154, 0.6);
-    transition: background 0.3s ease, transform 0.2s ease;
-    user-select: none;
-  }
+    button {
+        background: #81b29a;
+        border: none;
+        padding: 14px 36px;
+        border-radius: 10px;
+        color: #1a2f23;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(129, 178, 154, 0.6);
+        transition: background 0.3s ease, transform 0.2s ease;
+        user-select: none;
+    }
 
-  button:hover {
-    background: #67907d;
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(103, 144, 125, 0.8);
-  }
+    button:hover {
+        background: #67907d;
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(103, 144, 125, 0.8);
+    }
 
-  #coffre {
-    width: 160px;
-    margin: 40px auto;
-    cursor: pointer;
-    filter: drop-shadow(0 0 8px #81b29a);
-    transition: transform 0.3s ease, filter 0.3s ease;
-    user-select: none;
-  }
+    #coffre {
+        width: 160px;
+        margin: 40px auto;
+        cursor: pointer;
+        filter: drop-shadow(0 0 8px #81b29a);
+        transition: transform 0.3s ease, filter 0.3s ease;
+        user-select: none;
+        display: none;
+    }
 
-  #coffre:hover {
-    transform: scale(1.15) rotate(3deg);
-    filter: drop-shadow(0 0 15px #67907d);
-  }
+    #coffre:hover {
+        transform: scale(1.15) rotate(3deg);
+        filter: drop-shadow(0 0 15px #67907d);
+    }
 
-  .reward {
-    font-weight: 700;
-    font-size: 2rem;
-    margin-top: 40px;
-    color: #a2b9a6;
-    text-shadow: 0 0 10px #7f9c85;
-    user-select: none;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-  }
+    .reward {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-top: 20px;
+        color: #a2b9a6;
+        text-shadow: 0 0 10px #7f9c85;
+        user-select: none;
+        opacity: 0;
+        transform: translateY(20px) scale(0.8) rotate(0deg);
+        transition: opacity 0.5s ease, transform 0.8s ease;
+    }
 
-  .reward.show {
-    opacity: 1;
-  }
+    .reward.show {
+        opacity: 1;
+        transform: translateY(-50px) scale(1.2) rotate(-5deg);
+    }
 </style>
 </head>
 <body>
-  <h1>🎮 Boîte Mystère</h1>
-  <p>Appuie sur le bouton pour faire apparaître le coffre !</p>
+    <h1>🎮 Boîte Mystère</h1>
+    <p>Appuie sur le bouton pour faire apparaître le coffre !</p>
 
-  <button id="showCoffre">Afficher le Coffre</button>
+    <button id="showCoffre">Afficher le Coffre</button>
 
-  <img id="coffre" src="coffre.png" alt="Coffre au trésor" draggable="false" style="display:none;" />
+    <img id="coffre" src="coffre.png" alt="Coffre au trésor" draggable="false" />
 
-  <div id="reward" class="reward"></div>
+    <div id="reward" class="reward"></div>
 
-  <script>
-    const showCoffreBtn = document.getElementById('showCoffre');
-    const coffre = document.getElementById('coffre');
-    const rewardDiv = document.getElementById('reward');
+    <script>
+        const showCoffreBtn = document.getElementById('showCoffre');
+        const coffre = document.getElementById('coffre');
+        const rewardDiv = document.getElementById('reward');
 
-    const rewards = [
-      "🎮 30 minutes de jeu supplémentaires",
-      "🥤 1 boisson gratuite",
-      "🎟️ Acces Tournoi",
-      "😕 Pas de chance cette fois !",
-       "😕 Pas de chance cette fois !"
-    ];
+        const rewards = [
+            "🎮 30 minutes de jeu supplémentaires",
+            "🥤 1 boisson gratuite",
+            "🎟️ Accès au tournoi",
+            "😕 Pas de chance cette fois!"
+        ];
 
-    showCoffreBtn.addEventListener('click', () => {
-      showCoffreBtn.style.display = 'none';
-      coffre.style.display = 'block';
+        showCoffreBtn.addEventListener('click', () => {
+            showCoffreBtn.style.display = 'none';
+            coffre.style.display = 'block';
+            rewardDiv.textContent = '';
+            rewardDiv.classList.remove('show');
+        });
 
-      // Reset la récompense à chaque clic bouton
-      rewardDiv.textContent = '';
-      rewardDiv.classList.remove('show');
-    });
-
-   showCoffreBtn.addEventListener('click', () => {
-    showCoffreBtn.style.display = 'none';
-    coffre.classList.add('show');
-
-    // Affiche la récompense directement après affichage du coffre
-    const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-    rewardDiv.textContent = randomReward;
-    rewardDiv.classList.add('show');
-});
-
-  </script>
+        coffre.addEventListener('click', () => {
+            if (!rewardDiv.classList.contains('show')) {
+                const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+                rewardDiv.textContent = randomReward;
+                rewardDiv.classList.add('show');
+            }
+        });
+    </script>
 </body>
 </html>

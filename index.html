@@ -179,7 +179,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('hasSpun') === 'true') {
         spinBtn.disabled = true;
-        resultEl.textContent = '⚠️ Vous avez déjà tourné la roue cette session.';
+        resultEl.textContent = '⚠️ Vous avez déjà tourné la roue cette session. veiller supprimer cette page pour recommencer.';
       }
       updatePlayCountDisplay();
     });

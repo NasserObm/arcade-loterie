@@ -1,118 +1,210 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Boîte Mystère - Récompense directe</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #2e3a40;
-    color: #d7e8d2;
-    text-align: center;
-    padding: 40px 20px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roue Arcade</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #0f0f0f 0%, #000000 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-  h1 {
-    color: #81b29a;
-    font-weight: 900;
-    font-size: 3rem;
-    margin-bottom: 10px;
-    text-shadow: 0 0 8px #6b998e;
-  }
+    .wheel-wrapper {
+      position: relative;
+      width: 90vw;
+      max-width: 400px;
+      height: 90vw;
+      max-height: 400px;
+      border-radius: 50%;
+      box-shadow: 0 0 30px #ff0055, 0 0 60px #ff0055 inset;
+      background: repeating-conic-gradient(from 0deg, #222 0deg 10deg, #333 10deg 20deg);
+    }
 
-  p {
-    color: #c2d4cd;
-    font-size: 1.25rem;
-    margin-bottom: 30px;
-  }
+    #wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 6px solid #ff0040;
+      box-shadow: 0 0 15px #ff0055;
+      transition: transform 5s ease-out;
+    }
 
-  button {
-    background: #81b29a;
-    border: none;
-    padding: 14px 36px;
-    border-radius: 10px;
-    color: #1a2f23;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(129, 178, 154, 0.6);
-    transition: background 0.3s ease, transform 0.2s ease;
-    user-select: none;
-  }
+    .center-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 25px solid transparent;
+      border-right: 25px solid transparent;
+      border-top: 50px solid #ff2200;
+      transform: translate(-50%, -180px);
+      filter: drop-shadow(0 0 6px #ff2200);
+      z-index: 10;
+      animation: pulse 1s infinite;
+    }
 
-  button:hover {
-    background: #67907d;
-    transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(103, 144, 125, 0.8);
-  }
+    @keyframes pulse {
+      0% { transform: translate(-50%, -180px) scale(1); }
+      50% { transform: translate(-50%, -180px) scale(1.05); }
+      100% { transform: translate(-50%, -180px) scale(1); }
+    }
 
-  #coffre {
-    width: 160px;
-    margin: 40px auto;
-    filter: drop-shadow(0 0 8px #81b29a);
-    user-select: none;
-    display: none;
-  }
+    button {
+      margin-top: 40px;
+      padding: 16px 32px;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #ff0040, #ff6600);
+      color: white;
+      text-shadow: 0 0 3px black;
+      box-shadow: 0 0 15px #ff2200;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
 
-  .reward {
-    font-weight: 700;
-    font-size: 2rem;
-    margin-top: 40px;
-    color: #a2b9a6;
-    text-shadow: 0 0 10px #7f9c85;
-    user-select: none;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-  }
+    button:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
 
-  .reward.show {
-    opacity: 1;
-  }
-</style>
+    button:disabled {
+      background: #888;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #result {
+      margin-top: 30px;
+      padding: 15px 25px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #ff0040;
+      border-radius: 10px;
+      font-size: 22px;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 0 10px #ff0040;
+      animation: bounce 0.4s ease forwards;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="wheel-wrapper">
+    <canvas id="wheel" width="350" height="350"></canvas>
+    <div class="center-arrow"></div>
+  </div>
 
-<h1>🎮 Boîte Mystère</h1>
-<p>Appuie sur le bouton pour tenter ta chance !</p>
+  <button id="spin">TOURNER</button>
+  <div id="result"></div>
 
-<button id="showCoffre">Tirer une Récompense</button>
+  <audio id="winSound" src="https://www.myinstants.com/media/sounds/tf2-positive-vibe.mp3"></audio>
 
-<img id="coffre" src="coffre.png" alt="Coffre au trésor" draggable="false" />
+  <script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const spinBtn = document.getElementById('spin');
+    const resultEl = document.getElementById('result');
+    const winSound = document.getElementById('winSound');
 
-<div id="reward" class="reward"></div>
+    const rewards = [
+      { label: 'Pas de chance', color: '#222', weight: 55 },
+      { label: '15 min offerts', color: '#3498db', weight: 20 },
+      { label: '30 min offerts', color: '#2ecc71', weight: 10 },
+      { label: '45 min offerts', color: '#f1c40f', weight: 6 },
+      { label: '1h offerte', color: '#9b59b6', weight: 4 },
+      { label: 'Boisson offerte', color: '#34495e', weight: 3 },
+      { label: 'Journée offerte', color: '#e67e22', weight: 2 }
+    ];
 
-<script>
-  const showCoffreBtn = document.getElementById('showCoffre');
-  const coffre = document.getElementById('coffre');
-  const rewardDiv = document.getElementById('reward');
+    const numSlices = rewards.length;
+    const sliceAngle = 360 / numSlices;
 
- // Récompenses pondérées par répétition
-const rewards = [
-  ...Array(60).fill("😕 Pas de chance cette fois !"),
-  ...Array(10).fill("🕒 30 minutes de jeu supplémentaires"),
-  ...Array(12).fill("🕒 15 minutes de jeu supplémentaires"),
-  ...Array(4).fill("🕓 45 minutes de jeu supplémentaires"),
-  ...Array(3).fill("⏱️ 1 heure de jeu supplémentaire"),
-  ...Array(5).fill("🥤 Boisson offerte"),
-  ...Array(1).fill("💎 JACKPOT : 1 jour gratuit avec un ami !")
-];
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < numSlices; i++) {
+        const startAngle = (i * 2 * Math.PI / numSlices) - Math.PI / 2;
+        const endAngle = startAngle + (2 * Math.PI / numSlices);
 
+        ctx.beginPath();
+        ctx.moveTo(175, 175);
+        ctx.arc(175, 175, 175, startAngle, endAngle);
+        ctx.fillStyle = rewards[i].color;
+        ctx.fill();
 
-  function tirerRecompense() {
-    const index = Math.floor(Math.random() * rewards.length);
-    return rewards[index];
-  }
+        ctx.save();
+        ctx.translate(175, 175);
+        ctx.rotate(startAngle + Math.PI / numSlices);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Orbitron';
+        ctx.textAlign = 'right';
+        ctx.fillText(rewards[i].label, 165, 5);
+        ctx.restore();
+      }
+    }
 
-  showCoffreBtn.addEventListener('click', () => {
-    const reward = tirerRecompense();
-    rewardDiv.textContent = reward;
-    rewardDiv.classList.add('show');
+    function weightedPick() {
+      const total = rewards.reduce((acc, r) => acc + r.weight, 0);
+      let rand = Math.random() * total;
+      for (let i = 0; i < rewards.length; i++) {
+        if (rand < rewards[i].weight) return { reward: rewards[i], index: i };
+        rand -= rewards[i].weight;
+      }
+      return { reward: rewards[0], index: 0 };
+    }
 
-    showCoffreBtn.style.display = 'none';
-    coffre.style.display = 'block';
-  });
-</script>
+    let isSpinning = false;
+    let currentRotation = 0;
 
+    window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('hasSpun') === 'true') {
+        spinBtn.disabled = true;
+        resultEl.textContent = '⚠️ Vous avez déjà tourné la roue cette session.';
+      }
+    });
+
+    spinBtn.addEventListener('click', () => {
+      if (isSpinning) return;
+      isSpinning = true;
+      spinBtn.disabled = true;
+      resultEl.textContent = '';
+
+      const { reward, index } = weightedPick();
+
+      const anglePerSlice = 360 / rewards.length;
+      const extraSpins = 6;
+      const finalAngle = index * anglePerSlice + anglePerSlice / 2;
+      const totalRotation = 360 * extraSpins - finalAngle;
+
+      canvas.style.transition = 'transform 5s ease-out';
+      canvas.style.transform = `rotate(${totalRotation}deg)`;
+      currentRotation = totalRotation % 360;
+
+      setTimeout(() => {
+        resultEl.textContent = `🎉 Vous avez gagné : ${reward.label}`;
+        if (reward.label !== 'Pas de chance') winSound.play();
+        sessionStorage.setItem('hasSpun', 'true');
+        isSpinning = false;
+      }, 5200);
+    });
+
+    drawWheel();
+  </script>
 </body>
 </html>

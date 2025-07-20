@@ -7,34 +7,28 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: radial-gradient(circle at center, #0f0f0f 0%, #000000 100%);
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at center, #1a1a2e, #16213e);
       color: white;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      overflow: hidden;
     }
 
     .wheel-wrapper {
       position: relative;
-      width: 90vw;
-      max-width: 400px;
-      height: 90vw;
-      max-height: 400px;
-      border-radius: 50%;
-      box-shadow: 0 0 30px #ff0055, 0 0 60px #ff0055 inset;
-      background: repeating-conic-gradient(from 0deg, #222 0deg 10deg, #333 10deg 20deg);
+      width: 350px;
+      height: 350px;
     }
 
     #wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      border: 6px solid #ff0040;
-      box-shadow: 0 0 15px #ff0055;
+      border: 6px solid #f39c12;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
       transition: transform 5s ease-out;
     }
 
@@ -44,87 +38,67 @@
       left: 50%;
       width: 0;
       height: 0;
-      border-left: 25px solid transparent;
-      border-right: 25px solid transparent;
-      border-top: 50px solid #ff2200;
-      transform: translate(-50%, -180px);
-      filter: drop-shadow(0 0 6px #ff2200);
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 40px solid #e74c3c;
+      transform: translate(-50%, -170px);
       z-index: 10;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: translate(-50%, -180px) scale(1); }
-      50% { transform: translate(-50%, -180px) scale(1.05); }
-      100% { transform: translate(-50%, -180px) scale(1); }
+      filter: drop-shadow(0 0 5px #ff5555);
     }
 
     button {
-      margin-top: 40px;
-      padding: 16px 32px;
-      font-size: 20px;
-      font-weight: bold;
+      margin-top: 30px;
+      padding: 15px 30px;
+      background: #e74c3c;
+      color: white;
       border: none;
       border-radius: 10px;
-      background: linear-gradient(45deg, #ff0040, #ff6600);
-      color: white;
-      text-shadow: 0 0 3px black;
-      box-shadow: 0 0 15px #ff2200;
       cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    button:hover:not(:disabled) {
-      transform: scale(1.05);
+      font-size: 18px;
+      box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
     }
 
     button:disabled {
       background: #888;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
     #result {
-      margin-top: 30px;
-      padding: 15px 25px;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid #ff0040;
-      border-radius: 10px;
-      font-size: 22px;
-      color: #fff;
-      text-align: center;
-      box-shadow: 0 0 10px #ff0040;
-      animation: bounce 0.4s ease forwards;
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #f1c40f;
+      text-shadow: 0 0 4px #000;
     }
 
-    @keyframes bounce {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    #play-count {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #ffffff;
+      text-shadow: 0 0 3px #f39c12;
     }
-
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <div class="wheel-wrapper">
     <canvas id="wheel" width="350" height="350"></canvas>
     <div class="center-arrow"></div>
   </div>
 
-  <button id="spin">TOURNER</button>
+  <button id="spin">🎰 Tourner la roue</button>
   <div id="result"></div>
-
-  <audio id="winSound" src="https://www.myinstants.com/media/sounds/tf2-positive-vibe.mp3"></audio>
+  <div id="play-count"></div>
 
   <script>
     const canvas = document.getElementById('wheel');
     const ctx = canvas.getContext('2d');
     const spinBtn = document.getElementById('spin');
     const resultEl = document.getElementById('result');
-    const winSound = document.getElementById('winSound');
 
     const rewards = [
-      { label: 'Pas de chance', color: '#222', weight: 55 },
+      { label: 'Pas de chance', color: '#e74c3c', weight: 55 },
       { label: '15 min offerts', color: '#3498db', weight: 20 },
       { label: '30 min offerts', color: '#2ecc71', weight: 10 },
       { label: '45 min offerts', color: '#f1c40f', weight: 6 },
@@ -150,9 +124,9 @@
 
         ctx.save();
         ctx.translate(175, 175);
-        ctx.rotate(startAngle + Math.PI / numSlices);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px Orbitron';
+        ctx.rotate(startAngle + (Math.PI / numSlices));
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 13px sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(rewards[i].label, 165, 5);
         ctx.restore();
@@ -172,11 +146,42 @@
     let isSpinning = false;
     let currentRotation = 0;
 
+    function getTodayKey() {
+      const now = new Date();
+      return now.toISOString().split('T')[0];
+    }
+
+    function loadPlayCount() {
+      const today = getTodayKey();
+      const stored = JSON.parse(localStorage.getItem('dailyPlayCount') || '{}');
+
+      if (stored.date !== today) {
+        localStorage.setItem('dailyPlayCount', JSON.stringify({ date: today, count: 0 }));
+        return 0;
+      }
+
+      return stored.count || 0;
+    }
+
+    function incrementPlayCount() {
+      const today = getTodayKey();
+      let count = loadPlayCount() + 1;
+
+      localStorage.setItem('dailyPlayCount', JSON.stringify({ date: today, count }));
+      updatePlayCountDisplay();
+    }
+
+    function updatePlayCountDisplay() {
+      const count = loadPlayCount();
+      document.getElementById('play-count').textContent = `🎯 Parties jouées aujourd'hui : ${count}`;
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('hasSpun') === 'true') {
         spinBtn.disabled = true;
         resultEl.textContent = '⚠️ Vous avez déjà tourné la roue cette session.';
       }
+      updatePlayCountDisplay();
     });
 
     spinBtn.addEventListener('click', () => {
@@ -188,19 +193,20 @@
       const { reward, index } = weightedPick();
 
       const anglePerSlice = 360 / rewards.length;
-      const extraSpins = 6;
+      const extraSpins = 5;
       const finalAngle = index * anglePerSlice + anglePerSlice / 2;
       const totalRotation = 360 * extraSpins - finalAngle;
 
       canvas.style.transition = 'transform 5s ease-out';
       canvas.style.transform = `rotate(${totalRotation}deg)`;
+
       currentRotation = totalRotation % 360;
 
       setTimeout(() => {
         resultEl.textContent = `🎉 Vous avez gagné : ${reward.label}`;
-        if (reward.label !== 'Pas de chance') winSound.play();
-        sessionStorage.setItem('hasSpun', 'true');
         isSpinning = false;
+        sessionStorage.setItem('hasSpun', 'true');
+        incrementPlayCount();
       }, 5200);
     });
 
